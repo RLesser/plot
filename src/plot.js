@@ -1,4 +1,4 @@
-import {create} from "d3";
+import {create, max, sum} from "d3";
 import {Axes, autoAxisTicks, autoAxisLabels} from "./axes.js";
 import {facets} from "./facet.js";
 import {values} from "./mark.js";
@@ -42,6 +42,8 @@ export function plot(options = {}) {
     }
     markChannels.set(mark, channels);
     markIndex.set(mark, index);
+    channelSort(channels, "x", "y", mark.xsort);
+    channelSort(channels, "y", "x", mark.ysort);
   }
 
   const scaleDescriptors = Scales(scaleChannels, options);
@@ -142,4 +144,12 @@ function autoHeight({y, fy, fx}) {
   const nfy = fy ? fy.scale.domain().length : 1;
   const ny = y ? (y.type === "ordinal" ? y.scale.domain().length : Math.max(7, 17 / nfy)) : 1;
   return !!(y || fy) * Math.max(1, Math.min(60, ny * nfy)) * 20 + !!fx * 30 + 60;
+}
+
+export function channelSort(channels, x, y, reducer) {
+  if (!reducer) return;
+  reducer = reducer === "sum" ? sum : max;
+  const X = channels.find(([, {scale}]) => scale === x);
+  const Y = channels.find(([name]) => name === y) || channels.find(([name]) => name === `${y}2`);
+  if (X && Y) X[1].sorted = I => -reducer(I, i => Y[1].value[i]);
 }

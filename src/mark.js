@@ -7,7 +7,7 @@ const TypedArray = Object.getPrototypeOf(Uint8Array);
 const objectToString = Object.prototype.toString;
 
 export class Mark {
-  constructor(data, channels = [], options = {}) {
+  constructor(data, channels = [], {xsort, ysort, ...options} = {}) {
     const names = new Set();
     this.data = data;
     const {transform} = maybeTransform(options);
@@ -29,6 +29,8 @@ export class Mark {
       }
       return true;
     });
+    this.xsort = xsort;
+    this.ysort = ysort;
   }
   initialize(facets) {
     let data = arrayify(this.data);
