@@ -1,4 +1,4 @@
-import {create, max, sum} from "d3";
+import {create, count, max, mean, median, min, sum} from "d3";
 import {Axes, autoAxisTicks, autoAxisLabels} from "./axes.js";
 import {facets} from "./facet.js";
 import {values} from "./mark.js";
@@ -42,8 +42,8 @@ export function plot(options = {}) {
     }
     markChannels.set(mark, channels);
     markIndex.set(mark, index);
-    channelSort(channels, "x", "y", mark.xsort);
-    channelSort(channels, "y", "x", mark.ysort);
+    channelSort(channels, "x", "y", mark.sortX);
+    channelSort(channels, "y", "x", mark.sortY);
   }
 
   const scaleDescriptors = Scales(scaleChannels, options);
@@ -146,10 +146,24 @@ function autoHeight({y, fy, fx}) {
   return !!(y || fy) * Math.max(1, Math.min(60, ny * nfy)) * 20 + !!fx * 30 + 60;
 }
 
-export function channelSort(channels, x, y, reducer) {
-  if (!reducer) return;
-  reducer = reducer === "sum" ? sum : max;
+export function channelSort(channels, x, y, reduce) {
+  if (!reduce) return;
+  reduce = channelSortReduce(reduce);
   const X = channels.find(([, {scale}]) => scale === x);
   const Y = channels.find(([name]) => name === y) || channels.find(([name]) => name === `${y}2`);
-  if (X && Y) X[1].sorted = I => -reducer(I, i => Y[1].value[i]);
+  if (X && Y) X[1].sorted = I => -reduce(I, i => Y[1].value[i]);
+}
+
+function channelSortReduce(reduce) {
+  if (typeof reduce === "function") return reduce;
+  if (reduce === true) return max;
+  switch ((reduce + "").toLowerCase()) {
+    case "max": return max;
+    case "mean": return mean;
+    case "median": return median;
+    case "min": return min;
+    case "sum": return sum;
+    case "count": return count;
+  }
+  throw new Error(`unknown channel sort ${reduce}`);
 }

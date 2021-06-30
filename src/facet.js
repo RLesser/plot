@@ -62,8 +62,8 @@ class Facet extends Mark {
       for (const [, channel] of channels) {
         subchannels.push([, channel]);
       }
-      channelSort(channels, "x", "y", mark.xsort);
-      channelSort(channels, "y", "x", mark.ysort);
+      channelSort(channels, "x", "y", mark.sortX);
+      channelSort(channels, "y", "x", mark.sortY);
       marksChannels.push(channels);
     }
     return {index, channels: [...channels, ...subchannels]};
