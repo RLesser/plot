@@ -1,4 +1,4 @@
-import {group as grouper, sort, sum, deviation, min, max, mean, median, variance} from "d3";
+import {group as grouper, sort, sum, deviation, min, max, mean, median, variance, InternSet} from "d3";
 import {firstof} from "../defined.js";
 import {valueof, maybeColor, maybeInput, maybeTransform, maybeTuple, maybeLazyChannel, lazyChannel, first, identity, take, labelof, range} from "../mark.js";
 
@@ -139,6 +139,7 @@ export function maybeReduce(reduce, value) {
     case "first": return reduceFirst;
     case "last": return reduceLast;
     case "count": return reduceCount;
+    case "distinct": return reduceDistinct;
     case "sum": return value == null ? reduceCount : reduceSum;
     case "proportion": return reduceProportion(value, "data");
     case "proportion-facet": return reduceProportion(value, "facet");
@@ -202,12 +203,21 @@ const reduceCount = {
   }
 };
 
+const reduceDistinct = {
+  label: "Distinct",
+  reduce: (I, X) => {
+    const s = new InternSet();
+    for (const i of I) s.add(X[i]);
+    return s.size;
+  }
+};
+
+const reduceSum = reduceAccessor(sum);
+
 function sumOrCount(I, V) {
   if (!("type" in V)) V.type = typeof V.find(v => v != null) === "number";
   return V.type ? sum(I, i => V[i]) : I.length;
 }
-
-const reduceSum = reduceAccessor(sum);
 
 function reduceProportion(value, scope) {
   return value == null
