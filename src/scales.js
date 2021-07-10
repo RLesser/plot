@@ -1,5 +1,5 @@
 import {registry, position, radius, opacity} from "./scales/index.js";
-import {ScaleDiverging, ScaleDivergingSqrt, ScaleDivergingPow, ScaleDivergingLog, ScaleDivergingSymlog, ScaleLinear, ScaleSqrt, ScalePow, ScaleLog, ScaleSymlog, ScaleIdentity} from "./scales/quantitative.js";
+import {ScaleDiverging, ScaleDivergingSqrt, ScaleDivergingPow, ScaleDivergingLog, ScaleDivergingSymlog, ScaleLinear, ScaleSqrt, ScalePow, ScaleLog, ScaleSymlog, ScaleQuantile, ScaleThreshold, ScaleIdentity} from "./scales/quantitative.js";
 import {ScaleTime, ScaleUtc} from "./scales/temporal.js";
 import {ScaleOrdinal, ScalePoint, ScaleBand} from "./scales/ordinal.js";
 import {isOrdinal, isTemporal} from "./mark.js";
